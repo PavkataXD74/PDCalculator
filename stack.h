@@ -4,7 +4,7 @@
 struct stackNode
 {
     struct stackNode* lastElem;
-    double value;
+    char* value;
 };
 
 typedef struct
@@ -16,8 +16,8 @@ typedef struct
 
 
 Stack* createStack();
-struct stackNode* createStackNode(double value);
-void addToStack(Stack* stack, double value);
-double takeFromStack(Stack* stack);
+struct stackNode* createStackNode(char* value);
+void addToStack(Stack* stack, char* value);
+char* takeFromStack(Stack* stack);
 
 #endif
