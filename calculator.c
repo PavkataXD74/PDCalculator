@@ -55,61 +55,66 @@ double e()
 
 void tokenize(char* line, Stack* operands, Stack* operators)
 {
+    char* newLine = calloc(strlen(line)+1, sizeof(char));
+    strcpy(newLine, line);
+
     // 120.20 + 10 * log1 - 5.5 * pi / e + ln10
-    for(int i=strlen(line); i>=0; i--)
+    for(int i=strlen(newLine); i>=0; i--)
     {
-        if(line[i] == ' ') continue;
-        else if(line[i] <= '9' && line[i] >= '0')
+        if(newLine[i] == ' ') continue;
+        else if(newLine[i] <= '9' && newLine[i] >= '0')
         {
-            line[i+1] = '\0';
+            newLine[i+1] = '\0';
             int counter = 0;
-            while((line[i] <= '9' && line[i] >= '0') || line[i] == '.')
+            while((newLine[i] <= '9' && newLine[i] >= '0') || newLine[i] == '.')
             {
                 counter++;
                 i--;
             }
-            addToStack(operands, line+i+1);
-            line[i+1] = '\0';
+            addToStack(operands, newLine+i+1);
+            newLine[i+1] = '\0';
             i++;
         }
-        else if(line[i] == 'i' && line[i-1] == 'p')
+        else if(newLine[i] == 'i' && newLine[i-1] == 'p')
         {
             i--;
-            line[i] = '\0';
+            newLine[i] = '\0';
             addToStack(operands, "pi");
         }
-        else if(line[i] == 'e')
+        else if(newLine[i] == 'e')
         {
-            line[i] = '\0';
+            newLine[i] = '\0';
             addToStack(operands, "e");
         }
         
-        else if(line[i] == '+' || line[i] == '-' || line[i] == '*' || line[i] == '/') 
+        else if(newLine[i] == '+' || newLine[i] == '-' || newLine[i] == '*' || newLine[i] == '/') 
         {
-            printf("Eneterd for line[%d]=%c\n", i, line[i]);
+            printf("Eneterd for newLine[%d]=%c\n", i, newLine[i]);
             char temp[2];
-            temp[0] = line[i];
+            temp[0] = newLine[i];
             temp[1] = '\0';
             addToStack(operators, temp);
-            line[i] = '\0';
+            newLine[i] = '\0';
         }
-        else if(line[i] == 'n' && line[i-1] == 'l')
+        else if(newLine[i] == 'n' && newLine[i-1] == 'l')
         {
             i--;
-            line[i] = '\0';
+            newLine[i] = '\0';
             addToStack(operators, "ln");
         }
-        else if(line[i] == 'g' && line[i-1] == 'o' && line[i-2] == 'l')
+        else if(newLine[i] == 'g' && newLine[i-1] == 'o' && newLine[i-2] == 'l')
         {
             i-=2;
-            line[i] = '\0';
+            newLine[i] = '\0';
             addToStack(operators, "log");
         }
-        else {
+        else if(newLine[i] != '\0'){
             printf("Invalid character detected!\n");
             exit(1);
         }
     }
+
+    free(newLine);
 }
 
 
@@ -118,21 +123,28 @@ int main()
     char line[100];
     printf("Enter equation: ");
     fgets(line, 99, stdin);
-    printf("%s\n", line);
+    if(strlen(line) == 1) {
+        printf("Equasion cannot be empty!");
+        return 1;
+    }
+    line[strlen(line)-1] = '\0';
+    //printf("%s\n", line);
+
 
     Stack* operands = createStack();
     Stack* operators = createStack();
 
-
     tokenize(line, operands, operators);
-    int strinka = operands->size;
-    int kaka = operators->size;
-    for(int i=0; i<strinka; i++)
+
+
+    int operandsSize = operands->size;
+    int operatorsSize = operators->size;
+    for(int i=0; i<operandsSize; i++)
     {
         printf("%s\n", takeFromStack(operands));
     }
     printf("\n");
-    for(int i=0; i<kaka; i++)
+    for(int i=0; i<operatorsSize; i++)
     {
         printf("%s\n", takeFromStack(operators));
     }
