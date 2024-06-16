@@ -4,8 +4,8 @@
 #include <string.h>
 #include "stack.h"
 
-#define PI 3.14159265358979323846
-#define E 2.71828182845904523536
+#define PI 3.141592653 
+#define E  2.718281828 
 
 
 double sum(double a, double b)
@@ -25,10 +25,6 @@ double multiply(double a, double b)
 
 double divide(double a, double b)
 {
-    /*if(b == 0) {
-        printf("Division by zero detected!!!!");
-        exit(1);
-    }*/
     return a/b;
 }
 
@@ -58,7 +54,6 @@ void tokenize(char* line, Stack* operands, Stack* operators)
     char* newLine = calloc(strlen(line)+1, sizeof(char));
     strcpy(newLine, line);
 
-    // 120.20 + 10 * log1 - 5.5 * pi / e + ln10
     for(int i=strlen(newLine); i>=0; i--)
     {
         if(newLine[i] == ' ') continue;
@@ -126,9 +121,13 @@ void tokenize(char* line, Stack* operands, Stack* operators)
 
 int isValidNumber(char* number){
     if(number[0] == '.') return 0;
+    if(!strcmp(number, "pi")) return 1;
+    if(!strcmp(number, "e")) return 1;
+
     int lettersInNumber = 0;
     int afterDot = 0;
     int dotCount = 0;
+
     for(int i = 0; i < strlen(number); i++){
         if(number[i] == '.'){
             dotCount ++;
@@ -144,7 +143,7 @@ int isValidNumber(char* number){
             break;
         }
     }
-    // printf("dotCount: %d; afterDot: %d; lettersInNumber:%d\n", dotCount, afterDot, lettersInNumber);
+    
     if((dotCount == 1 && afterDot == 1 && lettersInNumber == 0) || (dotCount == 0 && afterDot == 0 && lettersInNumber == 0)){
         return 1;
     }
@@ -185,6 +184,7 @@ int validateEquation(Stack* operands, Stack* operators){
         }
         currentNode = currentNode->lastElem;
     }
+
     if(operandsCount == 1 && operatorsCount == 0){
         printf("Valid Equation\n");
         return -1;
@@ -199,6 +199,66 @@ int validateEquation(Stack* operands, Stack* operators){
     }
 }
 
+double takeNumber(char* str){
+    double number;
+    if(!strcmp(str, "pi")) number = pi();
+    else if(!strcmp(str, "e")) number = e();
+    else number = strtod(str, NULL);
+    return number;
+}
+
+void calculateEquation(Stack* operands, Stack* operators){
+    while(operators->size > 0){
+        char* currentOperator = takeFromStack(operators);
+        if(!strcmp(currentOperator, "+")){
+            double op1 = takeNumber(takeFromStack(operands));
+            double op2 = takeNumber(takeFromStack(operands));
+            char result[100];
+            sprintf(result, "%f", sum(op1, op2));
+            addToStack(operands, result);
+
+        }else if(!strcmp(currentOperator, "-")){
+            double op1 = takeNumber(takeFromStack(operands));
+            double op2 = takeNumber(takeFromStack(operands));
+            char result[100];
+            sprintf(result, "%f", subtract(op1, op2));
+            addToStack(operands, result);
+
+        }else if(!strcmp(currentOperator, "*")){
+            double op1 = takeNumber(takeFromStack(operands));
+            double op2 = takeNumber(takeFromStack(operands));
+            char result[100];
+            sprintf(result, "%f", multiply(op1, op2));
+            addToStack(operands, result);
+
+        }else if(!strcmp(currentOperator, "/")){
+            double op1 = takeNumber(takeFromStack(operands));
+            double op2 = takeNumber(takeFromStack(operands));
+            if(op2 == 0){ 
+                printf("Division by zero not allowed!\n");
+                exit(1);
+            }
+            char result[100];
+            sprintf(result, "%f", divide(op1, op2));
+            addToStack(operands, result);
+
+        }else if(!strcmp(currentOperator, "log")){
+            double op1 = takeNumber(takeFromStack(operands));
+            double op2 = takeNumber(takeFromStack(operands));
+            char result[100];
+            sprintf(result, "%f", logBase(op1, op2));
+            addToStack(operands, result);
+
+        }else if(!strcmp(currentOperator, "ln")){
+            double op1 = takeNumber(takeFromStack(operands));
+            char result[100];
+            sprintf(result, "%f", ln(op1));
+            addToStack(operands, result);
+
+        }
+    }
+}
+
 
 int main()
 {
@@ -210,32 +270,18 @@ int main()
         return 1;
     }
     line[strlen(line)-1] = '\0';
-    //printf("%s\n", line);
 
 
     Stack* operands = createStack();
     Stack* operators = createStack();
-
     tokenize(line, operands, operators);
-
-
-    // int operandsSize = operands->size;
-    // int operatorsSize = operators->size;
-    // for(int i=0; i<operandsSize; i++)
-    // {
-    //     printf("%s\n", takeFromStack(operands));
-    // }
-    // printf("\n");
-    // for(int i=0; i<operatorsSize; i++)
-    // {
-    //     printf("%s\n", takeFromStack(operators));
-    // }
 
     int errorFlag = validateEquation(operands, operators);
     if(errorFlag == -2){
         return 1;
     }else if(errorFlag == -1){
-        //calculate
+        calculateEquation(operands, operators);
+        printf("Result: %s\n", takeFromStack(operands));
     }else if(errorFlag >= 0){
         struct stackNode* currentNode = operands->stackHead;
         for(int i = 0; i < errorFlag; i++){
