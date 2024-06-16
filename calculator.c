@@ -60,25 +60,20 @@ void tokenize(char* line, Stack* operands, Stack* operators)
         else if(newLine[i] <= '9' && newLine[i] >= '0')
         {
             newLine[i+1] = '\0';
-            int counter = 0;
             while((newLine[i] <= '9' && newLine[i] >= '0') || newLine[i] == '.')
             {
-                counter++;
                 i--;
             }
-            addToStack(operands, newLine+i+1);
-            newLine[i+1] = '\0';
             i++;
+            addToStack(operands, newLine+i);
         }
         else if(newLine[i] == 'i' && newLine[i-1] == 'p')
         {
             i--;
-            newLine[i] = '\0';
             addToStack(operands, "pi");
         }
         else if(newLine[i] == 'e')
         {
-            newLine[i] = '\0';
             addToStack(operands, "e");
         }
         
@@ -88,18 +83,15 @@ void tokenize(char* line, Stack* operands, Stack* operators)
             temp[0] = newLine[i];
             temp[1] = '\0';
             addToStack(operators, temp);
-            newLine[i] = '\0';
         }
         else if(newLine[i] == 'n' && newLine[i-1] == 'l')
         {
             i--;
-            newLine[i] = '\0';
             addToStack(operators, "ln");
         }
         else if(newLine[i] == 'g' && newLine[i-1] == 'o' && newLine[i-2] == 'l')
         {
             i-=2;
-            newLine[i] = '\0';
             addToStack(operators, "log");
         }
         else if(newLine[i] != '\0'){
