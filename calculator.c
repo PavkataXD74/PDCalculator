@@ -89,7 +89,6 @@ void tokenize(char* line, Stack* operands, Stack* operators)
         
         else if(newLine[i] == '+' || newLine[i] == '-' || newLine[i] == '*' || newLine[i] == '/') 
         {
-            printf("Eneterd for newLine[%d]=%c\n", i, newLine[i]);
             char temp[2];
             temp[0] = newLine[i];
             temp[1] = '\0';
@@ -148,6 +147,10 @@ int main()
     {
         printf("%s\n", takeFromStack(operators));
     }
+
+
+    free(operands);
+    free(operators);
 
     return 0;
 }

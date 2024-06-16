@@ -6,7 +6,7 @@
 
 Stack* createStack()
 {
-    Stack* stack = malloc(sizeof(Stack*));
+    Stack* stack = malloc(sizeof(Stack));
 
     stack->size = 0;
     stack->stackHead = NULL;
